@@ -1,0 +1,4 @@
+/bin/*.o
+/lib/*.so
+/lib/*.a
+.directory
