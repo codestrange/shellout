@@ -5,6 +5,9 @@
 #include <limits.h>
 #include <stdbool.h>
 #include "commands/execution.h"
+#include "parser/parser.h"
+#include "utils/list.h"
+#include "utils/command.h"
 #define MAX_PATH 1000
 
 int current_pid;
@@ -50,6 +53,8 @@ int main(int argc, char **argv) {
     while(true) {
         printf("%s$", current_dir);
         char *line = mygetline();
+        List commands = parse(line);
+        execute_command(commands);
     }
     return 0;
 }

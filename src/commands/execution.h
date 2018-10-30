@@ -1,6 +1,8 @@
 #ifndef EXECUTION
 #define EXECUTION
 
-int execute_command(char *command, char **args);
+#include "../utils/list.h"
+
+int execute_command(List commands);
 
 #endif

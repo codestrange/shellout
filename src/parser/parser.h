@@ -1,7 +1,7 @@
 #ifndef PARSER
 #define PARSER
 
-#include "list.h"
+#include "../utils/list.h"
 
 List parse(char *line);
 
