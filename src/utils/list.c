@@ -1,16 +1,16 @@
 #include <stdlib.h>
 #include "command.h"
-#include "command_list.h"
+#include "list.h"
 
-CommandList new_list(int capacity) {
-    CommandList list;
+List new_list(int capacity) {
+    List list;
     list.capacity = capacity;
     list.array = malloc(capacity * sizeof(Command));
     list.size = 0;
     return list;
 }
 
-void insert_list(CommandList *list, int index, Command item) {
+void insert_list(List *list, int index, Command item) {
     if (index < 0)
         index = 0;
     if (index > list->size)
@@ -25,15 +25,15 @@ void insert_list(CommandList *list, int index, Command item) {
     ++list->size;
 }
 
-void append_list(CommandList *list, Command item) {
+void append_list(List *list, Command item) {
     insert_list(list, list->size, item);
 }
 
-void clear_list(CommandList *list) {
+void clear_list(List *list) {
     list->size = 0;
 }
 
-Command remove_list(CommandList *list, int index) {
+Command remove_list(List *list, int index) {
     if (index < 0)
         index = 0;
     if (index > list->size)
@@ -45,11 +45,11 @@ Command remove_list(CommandList *list, int index) {
     return item;
 }
 
-Command pop_list(CommandList *list) {
+Command pop_list(List *list) {
     return remove_list(list, list->size - 1);
 }
 
-Command index_list(CommandList *list, int index) {
+Command index_list(List *list, int index) {
     if (index < 0)
         index = 0;
     if (index > list->size)
