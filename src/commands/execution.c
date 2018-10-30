@@ -30,8 +30,7 @@ int open_all_out(Command *command,int first_fd) {
     int def_fd = first_fd;
     for(int i = 0; i < command->len_out_files; ++i) {
         char *out_file = command->out_files[i];
-        bool append = command->mask_in_files[i];
-        printf("append %d\n", append);
+        bool append = command->mask_out_files[i];
         if(outfirst) {
             outfirst = false;
         }

@@ -8,7 +8,7 @@ typedef struct Command {
     char **arguments;
     char **in_files;
     char **out_files;
-    bool *mask_in_files;
+    bool *mask_out_files;
     int len_in_files;
     int len_out_files;
 } Command;

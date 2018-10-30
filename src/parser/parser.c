@@ -14,8 +14,8 @@ List parse(char *line) {
     command.out_files = malloc(sizeof(char*));
     command.out_files[0] = malloc(10 * sizeof(char));
     command.out_files[0] = "files/a.txt";
-    command.mask_in_files = malloc(sizeof(bool*));
-    command.mask_in_files[0] = false;
+    command.mask_out_files = malloc(sizeof(bool*));
+    command.mask_out_files[0] = false;
     command.len_in_files = 0;
     command.len_out_files = 1;
 
@@ -30,8 +30,8 @@ List parse(char *line) {
     command1.in_files = malloc(sizeof(char*));
     command1.in_files[0] = malloc(10 * sizeof(char));
     command1.in_files[0] = "files/a.txt";
-    command1.mask_in_files = malloc(sizeof(bool*));
-    command1.mask_in_files[0] = false;
+    command1.mask_out_files = malloc(sizeof(bool*));
+    command1.mask_out_files[0] = false;
     command1.len_in_files = 1;
     command1.len_out_files = 0;
 
