@@ -4,51 +4,86 @@
 #include "../utils/list.h"
 #include "parser.h"
 
-List parse(char *line) {
+CharCharList split(char *str, char delim) {
+    CharCharList charCharList = new_charcharlist(10);
+    CharList charList = new_charlist(10);
+    while (true) {
+        if (*str == delim || *str == 0) {
+            if (charList.size) {
+                append_charcharlist(&charCharList, charList);
+                charList = new_charlist(10);
+            }
+            if (*str == 0)
+                break;
+        } else
+            append_charlist(&charList, *str);
+        str++;
+    }
+    return charCharList;
+}
+
+Command parse_command(CharCharList *charCharList, int *index) {
     Command command;
-    command.name = "ls";
-    command.arguments = malloc(3 * sizeof(char*));
-    command.arguments[0] = malloc(10 * sizeof(char));
-    command.arguments[0] = "ls";
-    command.arguments[1] = NULL;
-    command.out_files = malloc(sizeof(char*));
-    command.out_files[0] = malloc(10 * sizeof(char));
-    command.out_files[0] = "files/a.txt";
-    command.mask_out_files = malloc(sizeof(bool*));
-    command.mask_out_files[0] = false;
-    command.len_in_files = 0;
-    command.len_out_files = 1;
+    CharList name = new_charlist(10);
+    CharCharList arguments = new_charcharlist(10);
+    CharCharList in_files = new_charcharlist(10);
+    CharCharList out_files = new_charcharlist(10);
+    BoolList mask_out_files = new_boollist(10);
+    name = index_charcharlist(charCharList, *index);
+    append_charcharlist(&arguments, name);
+    (*index)++;
+    while (charCharList->size != *index) {
+        CharList charList = index_charcharlist(charCharList, *index);
+        int option;
+        if (charList.size == 1 && index_charlist(&charList, 0) == '<') {
+            option = INFILE;
+            (*index)++;
+        } else if (charList.size == 1 && index_charlist(&charList, 0) == '>') {
+            option = OUTFILE_REPLACE;
+            (*index)++;
+        } else if (charList.size == 2 && index_charlist(&charList, 0) == '>' && index_charlist(&charList, 1) == '>') {
+            option = OUTFILE_APPEND;
+            (*index)++;
+        } else {
+            option = ARGUMENT;
+        }
+        if(charCharList->size == *index)
+            break;
+        if(charList.size == 1 && index_charlist(&charList, 0) == '|')
+            break;
+        charList = index_charcharlist(charCharList, *index);
+        switch (option) {
+            case ARGUMENT:
+                append_charcharlist(&arguments, charList);
+                break;
+            case INFILE:
+                append_charcharlist(&in_files, charList);
+                break;
+            default:
+                append_charcharlist(&out_files, charList);
+                append_boollist(&mask_out_files, option == OUTFILE_APPEND);
+                break;
+        }
+        (*index)++;
+    }
+    command.name = convert_arraychar(&name);
+    command.arguments = convert_arraycharchar(&arguments);
+    command.in_files = convert_arraycharchar(&in_files);
+    command.out_files = convert_arraycharchar(&out_files);
+    command.mask_out_files = convert_boolchar(&mask_out_files);
+    command.len_in_files = in_files.size;
+    command.len_out_files = out_files.size;
+    command.len_arguments = arguments.size;
+    return command;
+}
 
-    Command command1;
-    command1.name = "grep";
-    command1.arguments = malloc(3 * sizeof(char*));
-    command1.arguments[0] = malloc(10 * sizeof(char));
-    command1.arguments[0] = "grep";
-    command1.arguments[1] = malloc(10 * sizeof(char));
-    command1.arguments[1] = "i";
-    command1.arguments[2] = NULL;
-    command1.in_files = malloc(sizeof(char*));
-    command1.in_files[0] = malloc(10 * sizeof(char));
-    command1.in_files[0] = "files/a.txt";
-    command1.mask_out_files = malloc(sizeof(bool*));
-    command1.mask_out_files[0] = false;
-    command1.len_in_files = 1;
-    command1.len_out_files = 0;
-
-    Command command2;
-    command2.name = "grep";
-    command2.arguments = malloc(3 * sizeof(char*));
-    command2.arguments[0] = malloc(10 * sizeof(char));
-    command2.arguments[0] = "grep";
-    command2.arguments[1] = malloc(10 * sizeof(char));
-    command2.arguments[1] = "e";
-    command2.arguments[2] = NULL;
-    command2.len_in_files = 0;
-    command2.len_out_files = 0;
-
-    List list = new_list(10);
-    append_list(&list, command);
-    append_list(&list, command1);
-    append_list(&list, command2);
-    return list;
+CommandList parse(char *str) {
+    CharCharList charCharList = split(str, ' ');
+    CommandList commandList = new_commandlist(10);
+    Command command;
+    for (int i = 0; i < charCharList.size; ++i) {
+        command = parse_command(&charCharList, &i);
+        append_commandlist(&commandList, command);
+    }
+    return commandList;
 }

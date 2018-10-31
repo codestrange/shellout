@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     while(true) {
         printf("%s$", current_dir);
         char *line = mygetline();
-        List commands = parse(line);
+        CommandList commands = parse(line);
         execute_command(commands);
     }
     return 0;

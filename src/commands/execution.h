@@ -3,6 +3,6 @@
 
 #include "../utils/list.h"
 
-int execute_command(List commands);
+int execute_command(CommandList commands);
 
 #endif

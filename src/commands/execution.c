@@ -47,7 +47,7 @@ int open_all_out(Command *command,int first_fd) {
     return def_fd;
 }
 
-int execute_command(List commands) {
+int execute_command(CommandList commands) {
     int in = 0;
     int out = 1;
     infirst = true;
@@ -56,7 +56,7 @@ int execute_command(List commands) {
         int pipes[2];
         pipe(pipes);
         out = pipes[1];
-        Command actual_command = index_list(&commands, i);
+        Command actual_command = index_commandlist(&commands, i);
         int command_input_fd = open_all_in(&actual_command, in);
         int command_output_fd = open_all_out(&actual_command, out);
         // //Just for debug

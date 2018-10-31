@@ -9,8 +9,11 @@ typedef struct Command {
     char **in_files;
     char **out_files;
     bool *mask_out_files;
+    int len_arguments;
     int len_in_files;
     int len_out_files;
 } Command;
+
+void print_command(Command *command);
 
 #endif
