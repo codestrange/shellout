@@ -56,11 +56,16 @@ int execute_command(CommandList commands) {
         int pipes[2];
         pipe(pipes);
         out = pipes[1];
+        if(i + 1 == commands.size) {
+            out = 1;
+            outfirst = true;
+        }
         Command actual_command = index_commandlist(&commands, i);
         int command_input_fd = open_all_in(&actual_command, in);
         int command_output_fd = open_all_out(&actual_command, out);
         // //Just for debug
         // printf("comando -> %s\npipes[0] -> %d\npipes[1]-> %d\nin-> %d\nout-> %d\ncommand_in-> %d\ncommand_out-> %d\n",actual_command.name,pipes[0],pipes[1],in,out,command_input_fd,command_output_fd);
+        // print_command(&actual_command);
         // //Just for debug
         int son = fork();
         if(son) {
@@ -84,8 +89,15 @@ int execute_command(CommandList commands) {
         else {
             close(pipes[0]);
             dup2(command_input_fd, 0);
-            dup2(out, 1);
+            if(i+1 != commands.size) {
+                dup2(pipes[1], 1);
+            }
+            else if(command_output_fd != 1) {
+                dup2(command_output_fd, 1);
+            }
             execvp(actual_command.name, actual_command.arguments);
+            perror("Problems executing the command");
+            exit(0);
         }
     }
 

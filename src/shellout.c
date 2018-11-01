@@ -35,6 +35,7 @@ char * mygetline(void) {
         if((*line++ = c) == '\n')
             break;
     }
+    --line;
     *line = '\0';
     return linep;
 }
