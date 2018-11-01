@@ -8,6 +8,7 @@
 #include "../utils/list.h"
 #include "../utils/command.h"
 
+int current_pid = -1;
 bool infirst = true;
 bool outfirst = true;
 
@@ -69,9 +70,11 @@ int execute_command(CommandList commands) {
         // //Just for debug
         int son = fork();
         if(son) {
+            current_pid = son;
             close(pipes[1]);
             int status;
             wait(&status);
+            current_pid = -1;
             in = pipes[0];
             char c;
             if(i + 1 == commands.size && command_output_fd == out) {
