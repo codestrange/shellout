@@ -17,7 +17,7 @@ char *current_dir;
 char *buffer;
 
 void signals_handler(int signal) {
-    if(current_pid != -1) {
+    if (current_pid != -1) {
         kill(current_pid, signal);
         printf("\r\r");
     }
@@ -25,12 +25,12 @@ void signals_handler(int signal) {
 }
 
 bool fixed_commands (char *command) {
-    if(strncmp(command, "exit", 4) == 0) {
+    if (strncmp(command, "exit", 4) == 0) {
             exit(0);
     }
-    if(strncmp(command, "cd", 2) == 0) {
+    if (strncmp(command, "cd", 2) == 0) {
         CommandList commands = parse(command);
-        if(commands.size == 1) {
+        if (commands.size == 1) {
             Command c = index_commandlist(&commands, 0);
             if (c.len_arguments == 2) {
                 chdir(c.arguments[1]);
@@ -50,21 +50,21 @@ char * mygetline(void) {
     char * line = malloc(100 * sizeof(char)), * linep = line;
     size_t lenmax = 100, len = lenmax;
     int c;
-    for(;;) {
+    while(true) {
         c = fgetc(stdin);
-        if(c == EOF)
+        if (c == EOF)
             break;
-        if(--len == 0) {
+        if (--len == 0) {
             len = lenmax;
             char * linen = realloc(linep, lenmax *= 2);
-            if(linen == NULL) {
+            if (linen == NULL) {
                 free(linep);
                 return NULL;
             }
             line = linen + (line - linep);
             linep = linen;
         }
-        if((*line++ = c) == '\n')
+        if ((*line++ = c) == '\n')
             break;
     }
     --line;
@@ -84,13 +84,13 @@ int main(int argc, char **argv) {
 
     initialize_shell();
 
-    while(true) {
+    while (true) {
         printf("%s$", current_dir);
         char *line = mygetline();
-        if(!fixed_commands(line)) {
+        if (!fixed_commands(line)) {
             CommandList commands = parse(line);
             execute_command(commands);
-        }   
+        }
     }
     return 0;
 }
