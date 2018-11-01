@@ -28,6 +28,21 @@ bool fixed_commands (char *command) {
     if(strncmp(command, "exit", 4) == 0) {
             exit(0);
     }
+    if(strncmp(command, "cd", 2) == 0) {
+        CommandList commands = parse(command);
+        if(commands.size == 1) {
+            Command c = index_commandlist(&commands, 0);
+            if (c.len_arguments == 2) {
+                chdir(c.arguments[1]);
+                getcwd(current_dir, MAX_PATH);
+            } 
+            else {
+                chdir("/home");
+                getcwd(current_dir, MAX_PATH);
+            }
+            return true;
+        }
+    }
     return false;
 }
 
