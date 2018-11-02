@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "command.h"
 
 void print_command(Command *command) {

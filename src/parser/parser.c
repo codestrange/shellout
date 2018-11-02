@@ -4,17 +4,29 @@
 #include "../utils/list.h"
 #include "parser.h"
 
-CharCharList split(char *str, char delim) {
+CharCharList split(char *str) {
     CharCharList charCharList = new_charcharlist(10);
     CharList charList = new_charlist(10);
     while (true) {
-        if (*str == delim || *str == 0) {
+        if (*str == ' ' || *str == 0) {
             if (charList.size) {
                 append_charcharlist(&charCharList, charList);
                 charList = new_charlist(10);
             }
             if (*str == 0)
                 break;
+        } else if (*str == '<' || *str == '>' || *str == '|') {
+            if (charList.size) {
+                append_charcharlist(&charCharList, charList);
+                charList = new_charlist(10);
+            }
+            append_charlist(&charList, *str);
+            if (*str == '>' && *(str + 1) == '>') {
+                append_charlist(&charList, *str);
+                str++;
+            }
+            append_charcharlist(&charCharList, charList);
+            charList = new_charlist(10);
         } else
             append_charlist(&charList, *str);
         str++;
@@ -78,7 +90,7 @@ Command parse_command(CharCharList *charCharList, int *index) {
 }
 
 CommandList parse(char *str) {
-    CharCharList charCharList = split(str, ' ');
+    CharCharList charCharList = split(str);
     CommandList commandList = new_commandlist(10);
     Command command;
     for (int i = 0; i < charCharList.size; ++i) {
