@@ -33,7 +33,9 @@ bool fixed_commands (char *command) {
         if(commands.size == 1) {
             Command c = index_commandlist(&commands, 0);
             if (c.len_arguments == 2) {
-                chdir(c.arguments[1]);
+                if(chdir(c.arguments[1])<0) {
+                    perror("Problem opening the dir");
+                }
                 getcwd(current_dir, MAX_PATH);
             } 
             else {
