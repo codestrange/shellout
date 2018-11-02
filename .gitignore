@@ -1,4 +1,5 @@
 /bin/*.o
+/bin/.fuse*
 /lib/*.so
 /lib/*.a
 /files/*.txt
