@@ -26,7 +26,16 @@ void signals_handler(int signal) {
     return;
 }
 
-bool fixed_commands (char *command) {
+bool try_parse_number(char *str, int *number) {
+    *number = 0;
+    while (*str && *str > 47 && *str < 58) {
+        *number = *number * 10 + *str - 48;
+        str++;
+    }
+    return !*str;
+}
+
+bool fixed_commands(char *command) {
     CommandList commands = parse(command);
     if (!commands.size)
         return true;
@@ -58,6 +67,31 @@ bool fixed_commands (char *command) {
             printf("%c", '\n');
         }
         return true;
+    } else if (commands.size == 1 && !strncmp(firstcommand.name, "!", 1) && firstcommand.len_arguments == 2 &&
+        firstcommand.len_in_files == 0 && firstcommand.len_out_files == 0) {
+        if (!strncmp(firstcommand.arguments[1], "!", 1)) {
+            CharList charList = index_charcharlist(&history, history.size - 1);
+            char *line = convert_arraychar(&charList);
+            if (!fixed_commands(line)) {
+                CommandList tempcommands = parse(line);
+                execute_command(tempcommands);
+            }
+            return true;
+        }
+        int number;
+        if (try_parse_number(firstcommand.arguments[1], &number)) {
+            if (number <= history.size && number != 0) {
+                CharList charList = index_charcharlist(&history, number - 1);
+                char *line = convert_arraychar(&charList);
+                if (!fixed_commands(line)) {
+                    CommandList tempcommands = parse(line);
+                    execute_command(tempcommands);
+                }
+                return true;
+            }
+        } else {
+            
+        }
     }
     return false;
 }
@@ -97,14 +131,16 @@ void initialize_shell() {
     history = get_history();
 }
 
-bool same_command(char *command) {
+bool save_history(char *line) {
     CharList temp = index_charcharlist(&history, history.size - 1);
     char *lastcommand = convert_arraychar(&temp);
-    while (*lastcommand && *command && *lastcommand == *command) {
-        command++;
+    while (*lastcommand && *line && *lastcommand == *line) {
+        line++;
         lastcommand++;
     }
-    return !*lastcommand && !*command;
+    CommandList commands = parse(line);
+    return (!commands.size || strncmp(index_commandlist(&commands, 0).name, "!", 1)) && 
+        (*lastcommand || *line) && *line != ' ';
 }
 
 int main(int argc, char **argv) {
@@ -114,7 +150,7 @@ int main(int argc, char **argv) {
     while (true) {
         printf("%s$", current_dir);
         char *line = mygetline();
-        if (!same_command(line) && *line != ' ') {
+        if (save_history(line)) {
             if (history.size == 50)
                 remove_charcharlist(&history, 0);
             CharList charList = new_charlist(10);

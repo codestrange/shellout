@@ -15,7 +15,7 @@ CharCharList split(char *str) {
             }
             if (*str == 0)
                 break;
-        } else if (*str == '<' || *str == '>' || *str == '|') {
+        } else if (*str == '<' || *str == '>' || *str == '|' || *str == '!') {
             if (charList.size) {
                 append_charcharlist(&charCharList, charList);
                 charList = new_charlist(10);
