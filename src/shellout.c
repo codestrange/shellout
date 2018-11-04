@@ -90,7 +90,18 @@ bool fixed_commands(char *command) {
                 return true;
             }
         } else {
-            
+            int len = strlen(firstcommand.arguments[1]);
+            for (int i = history.size - 1; i >=0; --i) {
+                CharList charList = index_charcharlist(&history, i);
+                char *line = convert_arraychar(&charList);
+                CommandList tempcommands = parse(line);
+                Command tempfirstcommand = index_commandlist(&tempcommands, 0);
+                if(!strncmp(tempfirstcommand.name, firstcommand.arguments[1], len)) {
+                    if (!fixed_commands(line))
+                        execute_command(tempcommands);
+                    return true;
+                }
+            }
         }
     }
     return false;
