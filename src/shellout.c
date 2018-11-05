@@ -46,7 +46,9 @@ bool fixed_commands(char *command) {
         exit(0);
     } else if (commands.size == 1 && !strncmp(firstcommand.name, "cd", 2)) {
         if (firstcommand.len_arguments == 2) {
-            chdir(firstcommand.arguments[1]);
+            if (chdir(firstcommand.arguments[1]) < 0) {
+                perror("Problem opening the dir");
+            }
             getcwd(current_dir, MAX_PATH);
         } else {
             chdir("/home");
