@@ -8,10 +8,14 @@
 #include <sys/wait.h>
 #include "../utils/list.h"
 #include "../utils/command.h"
+#include "../history/history.h"
 
 int current_pid = -1;
+int sons = 0;
+int* sons_pid = 0;
 bool infirst = true;
 bool outfirst = true;
+extern CharCharList history;
 
 int open_all_in(Command *command, int first_fd) {
     int def_fd = first_fd;
@@ -50,6 +54,8 @@ int open_all_out(Command *command,int first_fd) {
 }
 
 int execute_command(CommandList commands) {
+    sons = 0;
+    sons_pid = malloc(commands.size * sizeof(int));
     int in = 0;
     int out = 1;
     infirst = true;
@@ -70,40 +76,36 @@ int execute_command(CommandList commands) {
         // print_command(&actual_command);
         // //Just for debug
         int son = fork();
+        sons_pid[sons++] = son;
         if(son) {
             current_pid = son;
             close(pipes[1]);
             int status;
-            wait(&status);
             current_pid = -1;
             in = pipes[0];
-            char c;
-            if(i + 1 == commands.size && command_output_fd == out) {
-                while(read(in,&c,1)) {
-                    write(1,&c,1);
-                }
-            }
-            else if(command_output_fd != out) {
-                while(read(in,&c,1)) {
-                    write(command_output_fd,&c,1);
-                }
-                close(command_output_fd);
-            }
         }
         else {
             close(pipes[0]);
             dup2(command_input_fd, 0);
-            if(i+1 != commands.size) {
-                dup2(pipes[1], 1);
+            dup2(command_output_fd, 1);
+            if(!strncmp(actual_command.name, "history", 7)) {
+                print_history(&history);
+                exit(0);
             }
-            else if(command_output_fd != 1) {
-                dup2(command_output_fd, 1);
+            else if(!strncmp(actual_command.name, "cd", 2)||!strncmp(actual_command.name, "exit", 4)) {
+                exit(0);
             }
-            execvp(actual_command.name, actual_command.arguments);
+            else {
+                execvp(actual_command.name, actual_command.arguments);
+            }
             perror("Problems executing the command");
             exit(0);
         }
     }
-
+    while(sons--){
+        int status;
+        wait(&status);
+    }
+    free(sons_pid);
     return 0;
 }

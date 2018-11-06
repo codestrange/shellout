@@ -14,13 +14,17 @@
 #define MAX_PATH 1000
 
 extern int current_pid;
+extern int sons;
+extern int *sons_pid;
 char *current_dir;
 char *buffer;
 CharCharList history;
 
 void signals_handler(int signal) {
     if (current_pid != -1) {
-        kill(current_pid, signal);
+        for(int i = 0; i < sons; ++i) {
+            kill(sons_pid[i], signal);
+        }
         printf("\r\r");
     }
     return;
