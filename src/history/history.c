@@ -86,7 +86,7 @@ bool try_parse_number(char **line, CharList *new, int *number) {
     *number = 0;
     bool is_number = true;
     while (**line) {
-        if (**line == ' ') {
+        if (**line == ' ' || **line == '|' || **line == '>' || **line == '<') {
             break;
         }
         append_charlist(new, **line);
