@@ -95,9 +95,13 @@ int main(int argc, char **argv) {
 
     while (true) {
         printf("%s$", current_dir);
-        char *line = fixed_history_commands(&history, mygetline());
-        save_history(&history, line);
-        if (!fixed_commands(line)) {
+        bool isOk = true;
+        char *line = fixed_history_commands(&history, mygetline(), &isOk);
+        if (isOk)
+            save_history(&history, line);
+        if (!isOk)
+            printf("Problems executing the command: Event not found\n");
+        else if (!fixed_commands(line)) {
             CommandList commands = parse(line);
             execute_command(commands);
         }

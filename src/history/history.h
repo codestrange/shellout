@@ -15,6 +15,6 @@ void save_history(CharCharList *history, char *line);
 
 bool try_parse_number(char **line, CharList *new, int *number);
 
-char *fixed_history_commands(CharCharList *history, char *line);
+char *fixed_history_commands(CharCharList *history, char *line, bool *isOk);
 
 #endif

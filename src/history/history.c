@@ -99,7 +99,7 @@ bool try_parse_number(char **line, CharList *new, int *number) {
     return is_number;
 }
 
-char *fixed_history_commands(CharCharList *history, char *line) {
+char *fixed_history_commands(CharCharList *history, char *line, bool *isOk) {
     CharList result = new_charlist(50);
     while (*line) {
         if (*line != '!') {
@@ -124,6 +124,7 @@ char *fixed_history_commands(CharCharList *history, char *line) {
                     for (int j = 0; j < command.size; ++j) {
                         append_charlist(&result, index_charlist(&command, j));
                     }
+                    *isOk = false;
                 }
             } else if (command.size == 1 && index_charlist(&command, 0) == '!') {
                 if (history->size > 0) {
@@ -134,6 +135,7 @@ char *fixed_history_commands(CharCharList *history, char *line) {
                 } else {
                     append_charlist(&result, '!');
                     append_charlist(&result, '!');
+                    *isOk = false;
                 }
             } else {
                 char *firstcommand = convert_arraychar(&command);
@@ -157,6 +159,7 @@ char *fixed_history_commands(CharCharList *history, char *line) {
                     for (int j = 0; j < command.size; ++j) {
                         append_charlist(&result, index_charlist(&command, j));
                     }
+                    *isOk = false;
                 }
             }
         }
