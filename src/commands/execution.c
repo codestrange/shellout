@@ -19,9 +19,9 @@ extern CharCharList history;
 
 int open_all_in(Command *command, int first_fd) {
     int def_fd = first_fd;
-    for(int i = 0; i < command->len_in_files; ++i) {
+    for (int i = 0; i < command->len_in_files; ++i) {
         char *in_file = command->in_files[i];
-        if(infirst) {
+        if (infirst) {
             infirst = false;
         }
         else {
@@ -32,18 +32,18 @@ int open_all_in(Command *command, int first_fd) {
     return def_fd;
 }
 
-int open_all_out(Command *command,int first_fd) {
+int open_all_out(Command *command, int first_fd) {
     int def_fd = first_fd;
-    for(int i = 0; i < command->len_out_files; ++i) {
+    for (int i = 0; i < command->len_out_files; ++i) {
         char *out_file = command->out_files[i];
         bool append = command->mask_out_files[i];
-        if(outfirst) {
+        if (outfirst) {
             outfirst = false;
         }
         else {
             close(def_fd);
         }
-        if(!append) {
+        if (!append) {
             def_fd = open(out_file, O_CREAT | O_TRUNC | O_WRONLY, S_IRWXU | S_IRWXG | S_IROTH);
         }
         else {
@@ -60,11 +60,11 @@ int execute_command(CommandList commands) {
     int out = 1;
     infirst = true;
     outfirst = true;
-    for(int i = 0; i < commands.size; ++i) {
+    for (int i = 0; i < commands.size; ++i) {
         int pipes[2];
         pipe(pipes);
         out = pipes[1];
-        if(i + 1 == commands.size) {
+        if (i + 1 == commands.size) {
             out = 1;
             outfirst = true;
         }
@@ -77,7 +77,7 @@ int execute_command(CommandList commands) {
         // //Just for debug
         int son = fork();
         sons_pid[sons++] = son;
-        if(son) {
+        if (son) {
             current_pid = son;
             close(pipes[1]);
             int status;
@@ -88,11 +88,12 @@ int execute_command(CommandList commands) {
             close(pipes[0]);
             dup2(command_input_fd, 0);
             dup2(command_output_fd, 1);
-            if(!strncmp(actual_command.name, "history", 7)) {
+            if (!strncmp(actual_command.name, "history", 7) && strlen(actual_command.name) == 7 && actual_command.len_arguments == 1 && 
+                actual_command.len_in_files == 0 && actual_command.len_out_files == 0) {
                 print_history(&history);
                 exit(0);
             }
-            else if(!strncmp(actual_command.name, "cd", 2)||!strncmp(actual_command.name, "exit", 4)) {
+            else if ((!strncmp(actual_command.name, "cd", 2) && strlen(actual_command.name) == 2) || (!strncmp(actual_command.name, "exit", 4)  && strlen(actual_command.name) == 4)) {
                 exit(0);
             }
             else {

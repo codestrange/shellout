@@ -35,11 +35,11 @@ bool fixed_commands(char *command) {
     if (!commands.size)
         return true;
     Command firstcommand = index_commandlist(&commands, 0);
-    if (commands.size == 1 && !strncmp(firstcommand.name, "exit", 4) && firstcommand.len_arguments == 1 && 
+    if (commands.size == 1 && !strncmp(firstcommand.name, "exit", 4)  && strlen(firstcommand.name) == 4 && firstcommand.len_arguments == 1 && 
         firstcommand.len_in_files == 0 && firstcommand.len_out_files == 0) {
         set_history(&history);
         exit(0);
-    } else if (commands.size == 1 && !strncmp(firstcommand.name, "cd", 2)) {
+    } else if (commands.size == 1 && !strncmp(firstcommand.name, "cd", 2) && strlen(firstcommand.name) == 2) {
         if (firstcommand.len_arguments == 2) {
             if (chdir(firstcommand.arguments[1]) < 0) {
                 perror("Problem opening the dir");
@@ -49,10 +49,6 @@ bool fixed_commands(char *command) {
             chdir("/home");
             getcwd(current_dir, MAX_PATH);
         }
-        return true;
-    } else if (commands.size == 1 && !strncmp(firstcommand.name, "history", 7) && firstcommand.len_arguments == 1 && 
-        firstcommand.len_in_files == 0 && firstcommand.len_out_files == 0) {
-        print_history(&history);
         return true;
     }
     return false;
