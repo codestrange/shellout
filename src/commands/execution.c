@@ -93,7 +93,7 @@ int execute_command(CommandList commands) {
                 print_history(&history);
                 exit(0);
             }
-            else if ((!strncmp(actual_command.name, "cd", 2) && strlen(actual_command.name) == 2) || (!strncmp(actual_command.name, "exit", 4)  && strlen(actual_command.name) == 4)) {
+            else if ((!strncmp(actual_command.name, "cd", 2) && strlen(actual_command.name) == 2) || (!strncmp(actual_command.name, "exit", 4)  && strlen(actual_command.name) == 4) || !strlen(actual_command.name)) {
                 exit(0);
             }
             else {

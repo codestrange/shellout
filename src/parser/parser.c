@@ -41,9 +41,7 @@ Command parse_command(CharCharList *charCharList, int *index) {
     CharCharList in_files = new_charcharlist(10);
     CharCharList out_files = new_charcharlist(10);
     BoolList mask_out_files = new_boollist(10);
-    name = index_charcharlist(charCharList, *index);
-    append_charcharlist(&arguments, name);
-    (*index)++;
+    bool is_name = true;
     while (charCharList->size != *index) {
         CharList charList = index_charcharlist(charCharList, *index);
         int option;
@@ -66,6 +64,10 @@ Command parse_command(CharCharList *charCharList, int *index) {
         charList = index_charcharlist(charCharList, *index);
         switch (option) {
             case ARGUMENT:
+                if(is_name) {
+                    name = index_charcharlist(charCharList, *index);
+                    is_name = false;
+                }
                 append_charcharlist(&arguments, charList);
                 break;
             case INFILE:
